@@ -1,0 +1,19 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "com.min01.entitytimer.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"MixinServerLevel"
+	],
+	"client": [
+		"MixinLevelRenderer",
+		"MixinClientLevel",
+		"MixinMinecraft"
+	],
+	"server": [],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"refmap": "entitytimer.mixin-refmap.json"
+}
