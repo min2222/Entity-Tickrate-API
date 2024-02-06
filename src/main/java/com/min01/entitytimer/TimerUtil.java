@@ -76,12 +76,18 @@ public class TimerUtil
         		TickrateNetwork.CHANNEL.sendTo(new EntityTimerSyncPacket(entity.getUUID(), tickrate, false), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
         	}
         	
-    		if(TIMER_MAP.containsKey(entity.getUUID()))
-    		{
-    			TIMER_MAP.remove(entity.getUUID());
-    		}
-    		
-			TIMER_MAP.put(entity.getUUID(), new EntityTimer(tickrate, 0));
+			if(!TIMER_MAP.containsKey(entity.getUUID()))
+			{
+				TIMER_MAP.put(entity.getUUID(), new EntityTimer(tickrate, 0));
+			}
+			else
+			{
+				EntityTimer timer = TIMER_MAP.get(entity.getUUID());
+				if(timer.tickrate != tickrate)
+				{
+					TIMER_MAP.put(entity.getUUID(), new EntityTimer(tickrate, 0));
+				}
+			}
     	}
     }
     
