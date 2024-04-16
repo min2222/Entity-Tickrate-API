@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 @Mixin(Entity.class)
 public class MixinEntity
 {
-	@Redirect(at = @At(value = "INVOKE", target = "addAdditionalSaveData"), method = "saveWithoutId")
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"), method = "saveWithoutId")
 	public void addAdditionalSaveData(Entity instance, CompoundTag tag)
 	{
 		if(TimerUtil.hasTimer(instance))
@@ -23,7 +23,7 @@ public class MixinEntity
 		}
 	}
 	
-	@Redirect(at = @At(value = "INVOKE", target = "readAdditionalSaveData"), method = "load")
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"), method = "load")
 	public void readAdditionalSaveData(Entity instance, CompoundTag tag)
 	{
 		if(tag.contains(TimerUtil.TICKRATE))

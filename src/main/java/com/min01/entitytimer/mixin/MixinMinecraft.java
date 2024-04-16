@@ -71,7 +71,7 @@ public class MixinMinecraft
 		}
 	}
 	
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onRenderTickStart(F)V"), method = "runTick")
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onRenderTickStart(F)V"), method = "runTick", remap = false)
 	public void onRenderTickStart(float timer)
 	{
 		if(TimerUtil.isNotReplay())
@@ -84,7 +84,7 @@ public class MixinMinecraft
 		}
 	}
 
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onRenderTickEnd(F)V"), method = "runTick")
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraftforge/event/ForgeEventFactory;onRenderTickEnd(F)V"), method = "runTick", remap = false)
 	public void onRenderTickEnd(float timer)
 	{
 		if(TimerUtil.isNotReplay())
