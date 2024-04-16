@@ -2,7 +2,6 @@ package com.min01.entitytimer.mixin;
 
 import javax.annotation.Nullable;
 
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,29 +12,49 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.min01.entitytimer.TimerUtil;
 
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Timer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.ForgeEventFactory;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft
 {
 	@Shadow
-	private @Final Timer timer;
-	
-	@Shadow
 	private volatile boolean pause;
 
-	@Nullable
-	@Shadow
-	public ClientLevel level;
-	
 	@Shadow
 	private float pausePartialTick;
+	
+	@Nullable
+	@Shadow
+	private ClientLevel level;
+	
+	@Inject(at = @At("HEAD"), method = "runTick", cancellable = true)
+	private void runTick(boolean p_91384_, CallbackInfo ci) 
+	{
+		//move entity ticking to outside of loop
+		if(p_91384_ && TimerUtil.isNotReplay())
+		{
+			if(this.level != null)
+			{
+				if(!this.pause)
+				{
+					this.level.tickEntities();
+				}
+			}
+		}
+	}
+	
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;tickEntities()V"), method = "tick")
+	public void tickEntities(ClientLevel instance)
+	{
+		if(!TimerUtil.isNotReplay())
+		{
+			instance.tickEntities();
+		}
+	}
 	
 	@Inject(at = @At("HEAD"), method = "getFrameTime", cancellable = true)
 	private void getFrameTime(CallbackInfoReturnable<Float> ci) 
@@ -43,10 +62,6 @@ public class MixinMinecraft
 		if(TimerUtil.isNotReplay())
 		{
 			ci.setReturnValue(TimerUtil.ENTITY_TIMER.partialTickEntity);
-		}
-		else
-		{
-			ci.setReturnValue(this.timer.partialTick);
 		}
 	}
 	
@@ -57,50 +72,16 @@ public class MixinMinecraft
 		{
 			ci.setReturnValue(TimerUtil.ENTITY_TIMER.tickDeltaEntity);
 		}
-		else
-		{
-			ci.setReturnValue(this.timer.tickDelta);
-		}
 	}
-	
-	@Inject(at = @At("HEAD"), method = "runTick", cancellable = true)
-	private void runTick(boolean p_91384_, CallbackInfo ci) 
+
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Timer;advanceTime(J)I"), method = "runTick")
+	public int advanceTime(Timer instance, long p_92526_)
 	{
 		if(TimerUtil.isNotReplay())
 		{
-			if (p_91384_) 
-			{
-				int j = TimerUtil.ENTITY_TIMER.advanceTimeEntity(Util.getMillis());
-				
-				for(int k = 0; k < Math.min(10, j); ++k) 
-				{
-					this.tick();
-				}
-				
-				if(this.level != null)
-				{
-					if(!this.pause)
-					{
-						this.level.tickEntities();
-					}
-				}
-			}
+			return TimerUtil.ENTITY_TIMER.advanceTimeEntity(p_92526_);
 		}
-	}
-
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;tick()V"), method = "runTick")
-	public void tick(Minecraft instance)
-	{
-		if(!TimerUtil.isNotReplay())
-		{
-			instance.tick();
-		}
-	}
-	
-	@Shadow
-	private void tick()
-	{
-		
+		return instance.advanceTime(p_92526_);
 	}
 
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;render(FJZ)V"), method = "runTick")
@@ -112,7 +93,7 @@ public class MixinMinecraft
 		}
 		else
 		{
-			instance.render(this.pause ? this.pausePartialTick : this.timer.partialTick, crashreport, crashreportcategory);
+			instance.render(f1, crashreport, crashreportcategory);
 		}
 	}
 	
@@ -121,11 +102,11 @@ public class MixinMinecraft
 	{
 		if(TimerUtil.isNotReplay())
 		{
-			MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, this.pause ? this.pausePartialTick : TimerUtil.ENTITY_TIMER.partialTickEntity));
+			ForgeEventFactory.onRenderTickStart(this.pause ? this.pausePartialTick : TimerUtil.ENTITY_TIMER.partialTickEntity);
 		}
 		else
 		{
-			MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, this.pause ? this.pausePartialTick : this.timer.partialTick));
+			ForgeEventFactory.onRenderTickStart(timer);
 		}
 	}
 
@@ -134,20 +115,11 @@ public class MixinMinecraft
 	{
 		if(TimerUtil.isNotReplay())
 		{
-			MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, this.pause ? this.pausePartialTick : TimerUtil.ENTITY_TIMER.partialTickEntity));
+			ForgeEventFactory.onRenderTickEnd(this.pause ? this.pausePartialTick : TimerUtil.ENTITY_TIMER.partialTickEntity);
 		}
 		else
 		{
-			MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, this.pause ? this.pausePartialTick : this.timer.partialTick));
-		}
-	}
-	
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;tickEntities()V"), method = "tick")
-	public void tick(ClientLevel instance)
-	{
-		if(!TimerUtil.isNotReplay())
-		{
-			instance.tickEntities();
+			ForgeEventFactory.onRenderTickEnd(timer);
 		}
 	}
 }

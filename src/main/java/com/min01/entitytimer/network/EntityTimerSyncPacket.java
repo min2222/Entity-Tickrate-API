@@ -44,24 +44,24 @@ public class EntityTimerSyncPacket
 			{
 				if(!message.reset)
 				{
-					if(!TimerUtil.CLIENT_TIMER_MAP.containsKey(message.uuid))
+					if(!TimerUtil.hasClientTimer(message.uuid))
 					{
-						TimerUtil.CLIENT_TIMER_MAP.put(message.uuid, new EntityTimer(message.tickRate, 0));
+						TimerUtil.setClientTimer(message.uuid, message.tickRate);
 					}
 					else
 					{
-						EntityTimer timer = TimerUtil.CLIENT_TIMER_MAP.get(message.uuid);
+						EntityTimer timer = TimerUtil.getClientTimer(message.uuid);
 						if(timer.tickrate != message.tickRate)
 						{
-							TimerUtil.CLIENT_TIMER_MAP.put(message.uuid, new EntityTimer(message.tickRate, 0));
+							TimerUtil.setClientTimer(message.uuid, message.tickRate);
 						}
 					}
 				}
 				else
 				{
-					if(TimerUtil.CLIENT_TIMER_MAP.containsKey(message.uuid))
+					if(TimerUtil.hasClientTimer(message.uuid))
 					{
-						TimerUtil.CLIENT_TIMER_MAP.remove(message.uuid);
+						TimerUtil.removeClientTimer(message.uuid);
 					}
 				}
 			});

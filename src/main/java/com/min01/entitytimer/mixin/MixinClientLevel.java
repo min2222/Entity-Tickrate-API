@@ -38,11 +38,11 @@ public abstract class MixinClientLevel extends Level
 	@Inject(at = @At("HEAD"), method = "tickNonPassenger", cancellable = true)
 	private void tickNonPassenger(Entity p_104640_, CallbackInfo ci) 
 	{
-		if(TimerUtil.isNotReplay() && TimerUtil.CLIENT_TIMER_MAP.containsKey(p_104640_.getUUID()))
+		if(TimerUtil.isNotReplay() && TimerUtil.hasClientTimer(p_104640_))
 		{
 			ci.cancel();
 			this.getProfiler().push("tickEntities");
-			int j = TimerUtil.CLIENT_TIMER_MAP.get(p_104640_.getUUID()).advanceTimeEntity(Util.getMillis());
+			int j = TimerUtil.getClientTimer(p_104640_).advanceTimeEntity(Util.getMillis());
 			for(int k = 0; k < Math.min(10, j); ++k)
 			{
 				this.getProfiler().incrementCounter("entityTick");

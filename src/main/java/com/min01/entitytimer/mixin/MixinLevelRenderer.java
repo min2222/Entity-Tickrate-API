@@ -34,38 +34,16 @@ public class MixinLevelRenderer
     @Inject(at = @At("HEAD"), method = "renderEntity", cancellable = true)
     private void renderEntity(Entity p_109518_, double p_109519_, double p_109520_, double p_109521_, float p_109522_, PoseStack p_109523_, MultiBufferSource p_109524_, CallbackInfo ci)
     {
-		if(TimerUtil.isNotReplay())
+		if(TimerUtil.isNotReplay() && TimerUtil.hasClientTimer(p_109518_))
 		{
 	    	ci.cancel();
-			if(!TimerUtil.CLIENT_TIMER_MAP.isEmpty())
-			{
-				if(TimerUtil.CLIENT_TIMER_MAP.containsKey(p_109518_.getUUID()))
-				{
-					EntityTimer timer = TimerUtil.CLIENT_TIMER_MAP.get(p_109518_.getUUID());
-					float partialTick = timer.partialTickEntity;
-					double d0 = Mth.lerp((double)partialTick, p_109518_.xOld, p_109518_.getX());	
-			    	double d1 = Mth.lerp((double)partialTick, p_109518_.yOld, p_109518_.getY());
-			    	double d2 = Mth.lerp((double)partialTick, p_109518_.zOld, p_109518_.getZ());
-			    	float f = Mth.lerp(partialTick, p_109518_.yRotO, p_109518_.getYRot());
-			    	this.entityRenderDispatcher.render(p_109518_, d0 - p_109519_, d1 - p_109520_, d2 - p_109521_, f, partialTick, p_109523_, p_109524_, this.entityRenderDispatcher.getPackedLightCoords(p_109518_, partialTick));
-				}
-				else if(!TimerUtil.CLIENT_TIMER_MAP.containsKey(p_109518_.getUUID()))
-				{
-					double d0 = Mth.lerp((double)p_109522_, p_109518_.xOld, p_109518_.getX());	
-			    	double d1 = Mth.lerp((double)p_109522_, p_109518_.yOld, p_109518_.getY());
-			    	double d2 = Mth.lerp((double)p_109522_, p_109518_.zOld, p_109518_.getZ());
-			    	float f = Mth.lerp(p_109522_, p_109518_.yRotO, p_109518_.getYRot());
-			    	this.entityRenderDispatcher.render(p_109518_, d0 - p_109519_, d1 - p_109520_, d2 - p_109521_, f, p_109522_, p_109523_, p_109524_, this.entityRenderDispatcher.getPackedLightCoords(p_109518_, p_109522_));
-				}
-			}
-			else
-			{
-				double d0 = Mth.lerp((double)p_109522_, p_109518_.xOld, p_109518_.getX());	
-		    	double d1 = Mth.lerp((double)p_109522_, p_109518_.yOld, p_109518_.getY());
-		    	double d2 = Mth.lerp((double)p_109522_, p_109518_.zOld, p_109518_.getZ());
-		    	float f = Mth.lerp(p_109522_, p_109518_.yRotO, p_109518_.getYRot());
-		    	this.entityRenderDispatcher.render(p_109518_, d0 - p_109519_, d1 - p_109520_, d2 - p_109521_, f, p_109522_, p_109523_, p_109524_, this.entityRenderDispatcher.getPackedLightCoords(p_109518_, p_109522_));
-			}
+			EntityTimer timer = TimerUtil.getClientTimer(p_109518_);
+			float partialTick = timer.partialTickEntity;
+			double d0 = Mth.lerp((double)partialTick, p_109518_.xOld, p_109518_.getX());	
+	    	double d1 = Mth.lerp((double)partialTick, p_109518_.yOld, p_109518_.getY());
+	    	double d2 = Mth.lerp((double)partialTick, p_109518_.zOld, p_109518_.getZ());
+	    	float f = Mth.lerp(partialTick, p_109518_.yRotO, p_109518_.getYRot());
+	    	this.entityRenderDispatcher.render(p_109518_, d0 - p_109519_, d1 - p_109520_, d2 - p_109521_, f, partialTick, p_109523_, p_109524_, this.entityRenderDispatcher.getPackedLightCoords(p_109518_, partialTick));
 		}
     }
 }

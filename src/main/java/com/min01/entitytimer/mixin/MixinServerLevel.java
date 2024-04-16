@@ -110,19 +110,19 @@ public abstract class MixinServerLevel extends Level
 			}
 		}
 		
-		if(entity != null && TimerUtil.TIMER_MAP.containsKey(entity.getUUID()))
+		if(entity != null && TimerUtil.hasTimer(entity))
 		{
-			TimerUtil.setTickrate(p_8837_, TimerUtil.TIMER_MAP.get(entity.getUUID()).tickrate);
+			TimerUtil.setTickrate(p_8837_, TimerUtil.getTimer(entity).tickrate);
 		}
 	}
 	
 	@Inject(at = @At("HEAD"), method = "tickNonPassenger", cancellable = true)
 	private void tickNonPassenger(Entity p_8648_, CallbackInfo ci) 
 	{
-		if(TimerUtil.isNotReplay() && TimerUtil.TIMER_MAP.containsKey(p_8648_.getUUID()))
+		if(TimerUtil.isNotReplay() && TimerUtil.hasTimer(p_8648_))
 		{
 			ci.cancel();
-			int j = TimerUtil.TIMER_MAP.get(p_8648_.getUUID()).advanceTimeEntity(Util.getMillis());
+			int j = TimerUtil.getTimer(p_8648_).advanceTimeEntity(Util.getMillis());
 			for(int k = 0; k < Math.min(10, j); ++k)
 			{
 				this.tickEntities(p_8648_);

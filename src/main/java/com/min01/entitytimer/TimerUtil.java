@@ -24,8 +24,8 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 @Mod.EventBusSubscriber(modid = EntityTickrateAPI.MODID, bus = Bus.FORGE)
 public class TimerUtil 
 {
-	public static final Map<UUID, EntityTimer> TIMER_MAP = new HashMap<>();
-	public static final Map<UUID, EntityTimer> CLIENT_TIMER_MAP = new HashMap<>();
+	private static final Map<UUID, EntityTimer> TIMER_MAP = new HashMap<>();
+	private static final Map<UUID, EntityTimer> CLIENT_TIMER_MAP = new HashMap<>();
 	public static final EntityTimer ENTITY_TIMER = new EntityTimer(20.0F, 0L);
 
 	public static final String REPLAYMOD = "replaymod";
@@ -77,16 +77,16 @@ public class TimerUtil
         		TickrateNetwork.CHANNEL.sendTo(new EntityTimerSyncPacket(entity.getUUID(), tickrate, false), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
         	}
         	
-			if(!TIMER_MAP.containsKey(entity.getUUID()))
+			if(!hasTimer(entity))
 			{
-				TIMER_MAP.put(entity.getUUID(), new EntityTimer(tickrate, 0));
+				setTimer(entity, tickrate);
 			}
 			else
 			{
-				EntityTimer timer = TIMER_MAP.get(entity.getUUID());
+				EntityTimer timer = getTimer(entity);
 				if(timer.tickrate != tickrate)
 				{
-					TIMER_MAP.put(entity.getUUID(), new EntityTimer(tickrate, 0));
+					setTimer(entity, tickrate);
 				}
 			}
     	}
@@ -101,11 +101,91 @@ public class TimerUtil
         		TickrateNetwork.CHANNEL.sendTo(new EntityTimerSyncPacket(entity.getUUID(), 0, true), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
         	}
         	
-    		if(TIMER_MAP.containsKey(entity.getUUID()))
+    		if(hasTimer(entity))
     		{
-    			TIMER_MAP.remove(entity.getUUID());
+    			removeTimer(entity);
     		}
     	}
+    }
+    
+    public static void removeTimer(Entity entity)
+    {
+    	removeTimer(entity.getUUID());
+    }
+    
+    public static void removeTimer(UUID uuid)
+    {
+		TIMER_MAP.remove(uuid);
+    }
+    
+    public static void removeClientTimer(Entity entity)
+    {
+    	removeClientTimer(entity.getUUID());
+    }
+    
+    public static void removeClientTimer(UUID uuid)
+    {
+		CLIENT_TIMER_MAP.remove(uuid);
+    }
+    
+    public static void setTimer(Entity entity, float tickrate)
+    {
+    	setTimer(entity.getUUID(), tickrate);
+    }
+    
+    public static void setTimer(UUID uuid, float tickrate)
+    {
+		TIMER_MAP.put(uuid, new EntityTimer(tickrate, 0));
+    }
+    
+    public static void setClientTimer(Entity entity, float tickrate)
+    {
+    	setClientTimer(entity.getUUID(), tickrate);
+    }
+    
+    public static void setClientTimer(UUID uuid, float tickrate)
+    {
+    	CLIENT_TIMER_MAP.put(uuid, new EntityTimer(tickrate, 0));
+    }
+    
+    public static EntityTimer getClientTimer(Entity entity)
+    {
+    	return getClientTimer(entity.getUUID());
+    }
+    
+    public static EntityTimer getClientTimer(UUID uuid)
+    {
+    	return CLIENT_TIMER_MAP.get(uuid);
+    }
+    
+    public static EntityTimer getTimer(Entity entity)
+    {
+    	return getTimer(entity.getUUID());
+    }
+    
+    public static EntityTimer getTimer(UUID uuid)
+    {
+    	return TIMER_MAP.get(uuid);
+    }
+    
+    public static boolean hasClientTimer(Entity entity)
+    {
+    	return hasClientTimer(entity.getUUID());
+    }
+    
+    public static boolean hasClientTimer(UUID uuid)
+    {
+    	return CLIENT_TIMER_MAP.containsKey(uuid);
+    }
+    
+    public static boolean hasTimer(Entity entity)
+    {
+    	return hasTimer(entity.getUUID());
+    }
+    
+    public static boolean hasTimer(UUID uuid)
+    {
+    	return TIMER_MAP.containsKey(uuid);
     }
 	
 	public static boolean isModLoaded(String modid)
