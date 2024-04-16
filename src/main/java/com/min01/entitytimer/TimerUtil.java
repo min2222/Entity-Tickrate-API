@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.min01.entitytimer.command.SetTickrateCommand;
+import com.min01.entitytimer.network.EntityTimerSyncPacket;
 import com.min01.entitytimer.network.TickrateNetwork;
 import com.replaymod.replay.ReplayModReplay;
 

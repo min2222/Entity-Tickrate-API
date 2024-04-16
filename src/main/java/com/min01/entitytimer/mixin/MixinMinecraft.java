@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.min01.entitytimer.IEntityTicker;
 import com.min01.entitytimer.TimerUtil;
 
 import net.minecraft.Util;
@@ -23,7 +22,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 
 @Mixin(Minecraft.class)
-public class MixinMinecraft implements IEntityTicker
+public class MixinMinecraft
 {
 	@Shadow
 	private @Final Timer timer;
@@ -37,8 +36,6 @@ public class MixinMinecraft implements IEntityTicker
 	
 	@Shadow
 	private float pausePartialTick;
-	
-	int advanceTime;
 	
 	@Inject(at = @At("HEAD"), method = "getFrameTime", cancellable = true)
 	private void getFrameTime(CallbackInfoReturnable<Float> ci) 
@@ -74,7 +71,6 @@ public class MixinMinecraft implements IEntityTicker
 			if (p_91384_) 
 			{
 				int j = TimerUtil.ENTITY_TIMER.advanceTimeEntity(Util.getMillis());
-				this.advanceTime = j;
 				
 				for(int k = 0; k < Math.min(10, j); ++k) 
 				{
@@ -153,11 +149,5 @@ public class MixinMinecraft implements IEntityTicker
 		{
 			instance.tickEntities();
 		}
-	}
-
-	@Override
-	public int getAdvanceTime() 
-	{
-		return this.advanceTime;
 	}
 }

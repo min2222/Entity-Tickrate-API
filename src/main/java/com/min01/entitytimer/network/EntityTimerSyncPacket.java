@@ -1,7 +1,10 @@
-package com.min01.entitytimer;
+package com.min01.entitytimer.network;
 
 import java.util.UUID;
 import java.util.function.Supplier;
+
+import com.min01.entitytimer.EntityTimer;
+import com.min01.entitytimer.TimerUtil;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;

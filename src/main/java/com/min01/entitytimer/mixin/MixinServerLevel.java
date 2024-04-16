@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -115,74 +116,38 @@ public abstract class MixinServerLevel extends Level
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Inject(at = @At("HEAD"), method = "tickNonPassenger", cancellable = true)
 	private void tickNonPassenger(Entity p_8648_, CallbackInfo ci) 
 	{
-		if(TimerUtil.isNotReplay())
+		if(TimerUtil.isNotReplay() && TimerUtil.TIMER_MAP.containsKey(p_8648_.getUUID()))
 		{
 			ci.cancel();
-			if(!TimerUtil.TIMER_MAP.isEmpty())
+			int j = TimerUtil.TIMER_MAP.get(p_8648_.getUUID()).advanceTimeEntity(Util.getMillis());
+			for(int k = 0; k < Math.min(10, j); ++k)
 			{
-				if(TimerUtil.TIMER_MAP.containsKey(p_8648_.getUUID()))
-				{
-					int j = TimerUtil.TIMER_MAP.get(p_8648_.getUUID()).advanceTimeEntity(Util.getMillis());
-					for(int k = 0; k < Math.min(10, j); ++k)
-					{
-						p_8648_.setOldPosAndRot();
-						ProfilerFiller profilerfiller = this.getProfiler();
-						++p_8648_.tickCount;
-						this.getProfiler().push(() -> 
-						{
-							return Registry.ENTITY_TYPE.getKey(p_8648_.getType()).toString();
-						});
-						profilerfiller.incrementCounter("tickNonPassenger");
-						p_8648_.tick();
-						this.getProfiler().pop();
-
-						for(Entity entity : p_8648_.getPassengers())
-						{
-							this.tickPassenger(p_8648_, entity);
-						}
-					}
-				}
-				else if(!TimerUtil.TIMER_MAP.containsKey(p_8648_.getUUID()))
-				{
-					p_8648_.setOldPosAndRot();
-					ProfilerFiller profilerfiller = this.getProfiler();
-					++p_8648_.tickCount;
-					this.getProfiler().push(() -> 
-					{
-						return Registry.ENTITY_TYPE.getKey(p_8648_.getType()).toString();
-					});
-					profilerfiller.incrementCounter("tickNonPassenger");
-					p_8648_.tick();
-					this.getProfiler().pop();
-
-					for(Entity entity : p_8648_.getPassengers())
-					{
-						this.tickPassenger(p_8648_, entity);
-					}
-				}
+				this.tickEntities(p_8648_);
 			}
-			else
-			{
-				p_8648_.setOldPosAndRot();
-				ProfilerFiller profilerfiller = this.getProfiler();
-				++p_8648_.tickCount;
-				this.getProfiler().push(() -> 
-				{
-					return Registry.ENTITY_TYPE.getKey(p_8648_.getType()).toString();
-				});
-				profilerfiller.incrementCounter("tickNonPassenger");
-				p_8648_.tick();
-				this.getProfiler().pop();
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Unique
+	private void tickEntities(Entity p_8648_)
+	{
+		p_8648_.setOldPosAndRot();
+		ProfilerFiller profilerfiller = this.getProfiler();
+		++p_8648_.tickCount;
+		this.getProfiler().push(() -> 
+		{
+			return Registry.ENTITY_TYPE.getKey(p_8648_.getType()).toString();
+		});
+		profilerfiller.incrementCounter("tickNonPassenger");
+		p_8648_.tick();
+		this.getProfiler().pop();
 
-				for(Entity entity : p_8648_.getPassengers())
-				{
-					this.tickPassenger(p_8648_, entity);
-				}
-			}
+		for(Entity entity : p_8648_.getPassengers())
+		{
+			this.tickPassenger(p_8648_, entity);
 		}
 	}
 	

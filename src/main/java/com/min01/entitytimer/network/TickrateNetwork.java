@@ -1,7 +1,6 @@
 package com.min01.entitytimer.network;
 
 import com.min01.entitytimer.EntityTickrateAPI;
-import com.min01.entitytimer.EntityTimerSyncPacket;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

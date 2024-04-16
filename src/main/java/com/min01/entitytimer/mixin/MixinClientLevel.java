@@ -9,11 +9,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.min01.entitytimer.IEntityTicker;
 import com.min01.entitytimer.TimerUtil;
 
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -40,90 +38,32 @@ public abstract class MixinClientLevel extends Level
 	@Inject(at = @At("HEAD"), method = "tickNonPassenger", cancellable = true)
 	private void tickNonPassenger(Entity p_104640_, CallbackInfo ci) 
 	{
-		if(TimerUtil.isNotReplay())
+		if(TimerUtil.isNotReplay() && TimerUtil.CLIENT_TIMER_MAP.containsKey(p_104640_.getUUID()))
 		{
 			ci.cancel();
-			if(!TimerUtil.CLIENT_TIMER_MAP.isEmpty())
+			this.getProfiler().push("tickEntities");
+			int j = TimerUtil.CLIENT_TIMER_MAP.get(p_104640_.getUUID()).advanceTimeEntity(Util.getMillis());
+			for(int k = 0; k < Math.min(10, j); ++k)
 			{
-				if(TimerUtil.CLIENT_TIMER_MAP.containsKey(p_104640_.getUUID()))
+				this.getProfiler().incrementCounter("entityTick");
+				p_104640_.setOldPosAndRot();
+				++p_104640_.tickCount;
+				this.getProfiler().push(() -> 
 				{
-					this.getProfiler().push("tickEntities");
-					int j = TimerUtil.CLIENT_TIMER_MAP.get(p_104640_.getUUID()).advanceTimeEntity(Util.getMillis());
-					for(int k = 0; k < Math.min(10, j); ++k)
-					{
-						this.getProfiler().incrementCounter("entityTick");
-						p_104640_.setOldPosAndRot();
-						++p_104640_.tickCount;
-						this.getProfiler().push(() -> 
-						{
-							return Registry.ENTITY_TYPE.getKey(p_104640_.getType()).toString();
-						});
-						if (p_104640_.canUpdate())
-						{
-							p_104640_.tick();
-						}
-						this.getProfiler().pop();
-
-						for(Entity entity : p_104640_.getPassengers())
-						{
-							this.tickPassenger(p_104640_, entity);
-						}
-					}
-					this.getProfiler().pop();
-				}
-				else if(!TimerUtil.CLIENT_TIMER_MAP.containsKey(p_104640_.getUUID()))
+					return Registry.ENTITY_TYPE.getKey(p_104640_.getType()).toString();
+				});
+				if (p_104640_.canUpdate())
 				{
-					this.getProfiler().push("tickEntities");
-					int j = ((IEntityTicker)Minecraft.getInstance()).getAdvanceTime();
-					for(int k = 0; k < Math.min(10, j); ++k)
-					{
-						this.getProfiler().incrementCounter("entityTick");
-						p_104640_.setOldPosAndRot();
-						++p_104640_.tickCount;
-						this.getProfiler().push(() -> 
-						{
-							return Registry.ENTITY_TYPE.getKey(p_104640_.getType()).toString();
-						});
-						if (p_104640_.canUpdate())
-						{
-							p_104640_.tick();
-						}
-						this.getProfiler().pop();
-
-						for(Entity entity : p_104640_.getPassengers())
-						{
-							this.tickPassenger(p_104640_, entity);
-						}
-					}
-					this.getProfiler().pop();
-				}
-			}
-			else
-			{
-				this.getProfiler().push("tickEntities");
-				int j = ((IEntityTicker)Minecraft.getInstance()).getAdvanceTime();
-				for(int k = 0; k < Math.min(10, j); ++k)
-				{
-					this.getProfiler().incrementCounter("entityTick");
-					p_104640_.setOldPosAndRot();
-					++p_104640_.tickCount;
-					this.getProfiler().push(() -> 
-					{
-						return Registry.ENTITY_TYPE.getKey(p_104640_.getType()).toString();
-					});
-					if (p_104640_.canUpdate())
-					{
-						p_104640_.tick();
-					}
-					this.getProfiler().pop();
-
-					for(Entity entity : p_104640_.getPassengers())
-					{
-						this.tickPassenger(p_104640_, entity);
-					}
+					p_104640_.tick();
 				}
 				this.getProfiler().pop();
+
+				for(Entity entity : p_104640_.getPassengers())
+				{
+					this.tickPassenger(p_104640_, entity);
+				}
 			}
+			this.getProfiler().pop();
 		}
 	}
 	
