@@ -29,6 +29,7 @@ public class TimerUtil
 	public static final EntityTimer ENTITY_TIMER = new EntityTimer(20.0F, 0L);
 
 	public static final String REPLAYMOD = "replaymod";
+	public static final String TICKRATE = "Tickrate";
 	public static final Map<Class<? extends Entity>, Object> ENTITY_MAP = new HashMap<>();
 	
     @SubscribeEvent

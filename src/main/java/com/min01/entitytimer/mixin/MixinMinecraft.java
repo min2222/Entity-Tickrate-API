@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.min01.entitytimer.TimerUtil;
@@ -30,31 +29,6 @@ public class MixinMinecraft
 	@Nullable
 	@Shadow
 	private ClientLevel level;
-	
-	@Inject(at = @At("HEAD"), method = "runTick", cancellable = true)
-	private void runTick(boolean p_91384_, CallbackInfo ci) 
-	{
-		//move entity ticking to outside of loop
-		if(p_91384_ && TimerUtil.isNotReplay())
-		{
-			if(this.level != null)
-			{
-				if(!this.pause)
-				{
-					this.level.tickEntities();
-				}
-			}
-		}
-	}
-	
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;tickEntities()V"), method = "tick")
-	public void tickEntities(ClientLevel instance)
-	{
-		if(!TimerUtil.isNotReplay())
-		{
-			instance.tickEntities();
-		}
-	}
 	
 	@Inject(at = @At("HEAD"), method = "getFrameTime", cancellable = true)
 	private void getFrameTime(CallbackInfoReturnable<Float> ci) 
