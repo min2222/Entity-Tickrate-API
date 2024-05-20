@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.min01.entitytimer.TimerUtil;
+import com.min01.entitytimer.config.TimerConfig;
 
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
@@ -123,7 +124,8 @@ public abstract class MixinServerLevel extends Level
 		{
 			ci.cancel();
 			int j = TimerUtil.getTimer(p_8648_).advanceTimeEntity(Util.getMillis());
-			for(int k = 0; k < Math.min(10, j); ++k)
+			int i = TimerConfig.disableTickrateLimit.get() ? j : Math.min(10, j);
+			for(int k = 0; k < i; ++k)
 			{
 				this.tickEntities(p_8648_);
 			}

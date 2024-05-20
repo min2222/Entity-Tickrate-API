@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.min01.entitytimer.TimerUtil;
+import com.min01.entitytimer.config.TimerConfig;
 
 import net.minecraft.Util;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -43,7 +44,8 @@ public abstract class MixinClientLevel extends Level
 			ci.cancel();
 			this.getProfiler().push("tickEntities");
 			int j = TimerUtil.getClientTimer(p_104640_).advanceTimeEntity(Util.getMillis());
-			for(int k = 0; k < Math.min(10, j); ++k)
+			int i = TimerConfig.disableTickrateLimit.get() ? j : Math.min(10, j);
+			for(int k = 0; k < i; ++k)
 			{
 				this.getProfiler().incrementCounter("entityTick");
 				p_104640_.setOldPosAndRot();
