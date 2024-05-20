@@ -4,8 +4,7 @@
 	"package": "com.min01.entitytimer.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"MixinServerLevel",
-		"MixinEntity"
+		"MixinServerLevel"
 	],
 	"client": [
 		"MixinLevelRenderer",
