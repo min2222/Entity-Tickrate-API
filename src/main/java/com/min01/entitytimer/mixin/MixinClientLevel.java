@@ -44,7 +44,7 @@ public abstract class MixinClientLevel extends Level
 			ci.cancel();
 			this.getProfiler().push("tickEntities");
 			int j = TimerUtil.getClientTimer(p_104640_).advanceTimeEntity(Util.getMillis());
-			for(int k = 0; k < Math.min(TimerConfig.disableTickrateLimit.get() ? 10000 : 10, j); ++k)
+			for(int k = 0; k < Math.min(TimerConfig.disableTickrateLimit.get() ? 500 : 10, j); ++k)
 			{
 				this.getProfiler().incrementCounter("entityTick");
 				p_104640_.setOldPosAndRot();

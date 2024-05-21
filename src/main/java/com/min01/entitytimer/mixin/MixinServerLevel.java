@@ -124,7 +124,7 @@ public abstract class MixinServerLevel extends Level
 		{
 			ci.cancel();
 			int j = TimerUtil.getTimer(p_8648_).advanceTimeEntity(Util.getMillis());
-			for(int k = 0; k < Math.min(TimerConfig.disableTickrateLimit.get() ? 10000 : 10, j); ++k)
+			for(int k = 0; k < Math.min(TimerConfig.disableTickrateLimit.get() ? 500 : 10, j); ++k)
 			{
 				this.tickEntities(p_8648_);
 			}
