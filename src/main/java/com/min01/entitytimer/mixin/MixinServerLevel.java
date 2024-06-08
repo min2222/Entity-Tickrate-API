@@ -1,7 +1,5 @@
 package com.min01.entitytimer.mixin;
 
-import java.lang.StackWalker.Option;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,83 +35,39 @@ public abstract class MixinServerLevel extends Level
 	@Inject(at = @At("HEAD"), method = "addFreshEntity")
 	private void addFreshEntity(Entity p_8837_, CallbackInfoReturnable<Boolean> ci)
 	{
-		Optional<?> walker = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(13).findFirst());
-		Optional<?> walker2 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(12).findFirst());
-		Optional<?> walker3 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(11).findFirst());
-		Optional<?> walker4 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(10).findFirst());
-		Optional<?> walker5 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(9).findFirst());
-		Optional<?> walker6 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(8).findFirst());
-		Optional<?> walker7 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(7).findFirst());
-		Optional<?> walker8 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(6).findFirst());
-		Optional<?> walker9 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(5).findFirst());
-		Optional<?> walker10 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(4).findFirst());
-		Optional<?> walker11 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst());
-		Optional<?> walker12 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(2).findFirst());
-		Optional<?> walker13 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(1).findFirst());
-		Optional<?> walker14 = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames.map(StackWalker.StackFrame::getDeclaringClass).skip(0).findFirst());
-		
-		Entity entity = null;
-		
-		if(entity == null && walker.isPresent())
+		MySecurityManager manager = new MySecurityManager();
+		Entity entity1 = null;
+		Entity entity2 = null;
+		Class<?>[] ctx = manager.getContext();
+		int i = 0;
+		int i2 = 0;
+		do
 		{
-			entity = (Entity) TimerUtil.ENTITY_MAP.get(walker.get());
-			if(entity == null && walker2.isPresent())
+			entity1 = ServerLevel.class.cast(this).getEntity(TimerUtil.ENTITY_MAP.get(ctx[i].hashCode()));
+			i++;
+		}
+		while(entity1 == null && i < ctx.length);
+		do
+		{
+			entity2 = ServerLevel.class.cast(this).getEntity(TimerUtil.ENTITY_MAP2.get(ctx[i2].hashCode()));
+			i2++;
+		}
+		while(entity2 == null && i2 < ctx.length);
+		Entity entity = entity1 != null ? entity1 : entity2;
+		if(entity != null)
+		{
+			if(TimerUtil.hasTimer(entity))
 			{
-				entity = (Entity) TimerUtil.ENTITY_MAP.get(walker2.get());
-				if(entity == null && walker3.isPresent())
-				{
-					entity = (Entity) TimerUtil.ENTITY_MAP.get(walker3.get());
-					if(entity == null && walker4.isPresent())
-					{
-						entity = (Entity) TimerUtil.ENTITY_MAP.get(walker4.get());
-						if(entity == null && walker5.isPresent())
-						{
-							entity = (Entity) TimerUtil.ENTITY_MAP.get(walker5.get());
-							if(entity == null && walker6.isPresent())
-							{
-								entity = (Entity) TimerUtil.ENTITY_MAP.get(walker6.get());
-								if(entity == null && walker7.isPresent())
-								{
-									entity = (Entity) TimerUtil.ENTITY_MAP.get(walker7.get());
-									if(entity == null && walker8.isPresent())
-									{
-										entity = (Entity) TimerUtil.ENTITY_MAP.get(walker8.get());
-										if(entity == null && walker9.isPresent())
-										{
-											entity = (Entity) TimerUtil.ENTITY_MAP.get(walker9.get());
-											if(entity == null && walker10.isPresent())
-											{
-												entity = (Entity) TimerUtil.ENTITY_MAP.get(walker10.get());
-												if(entity == null && walker11.isPresent())
-												{
-													entity = (Entity) TimerUtil.ENTITY_MAP.get(walker11.get());
-													if(entity == null && walker12.isPresent())
-													{
-														entity = (Entity) TimerUtil.ENTITY_MAP.get(walker12.get());
-														if(entity == null && walker13.isPresent())
-														{
-															entity = (Entity) TimerUtil.ENTITY_MAP.get(walker13.get());
-															if(entity == null && walker14.isPresent())
-															{
-																entity = (Entity) TimerUtil.ENTITY_MAP.get(walker14.get());
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				TimerUtil.setTickrate(p_8837_, TimerUtil.getTimer(entity).tickrate);
 			}
 		}
-		
-		if(entity != null && TimerUtil.hasTimer(entity))
+	}
+	
+	private static class MySecurityManager extends SecurityManager
+	{
+		public Class<?>[] getContext()
 		{
-			TimerUtil.setTickrate(p_8837_, TimerUtil.getTimer(entity).tickrate);
+			return this.getClassContext();
 		}
 	}
 	

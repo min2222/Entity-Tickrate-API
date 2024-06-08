@@ -30,7 +30,8 @@ public class TimerUtil
 
 	public static final String REPLAYMOD = "replaymod";
 	public static final String TICKRATE = "Tickrate";
-	public static final Map<Class<? extends Entity>, Object> ENTITY_MAP = new HashMap<>();
+	public static final Map<Integer, UUID> ENTITY_MAP = new HashMap<>();
+	public static final Map<Integer, UUID> ENTITY_MAP2 = new HashMap<>();
 	
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event)
@@ -47,7 +48,11 @@ public class TimerUtil
 	@SubscribeEvent
 	public static void onEntityJoin(EntityJoinLevelEvent event)
 	{
-		ENTITY_MAP.put(event.getEntity().getClass(), event.getEntity());
+		ENTITY_MAP.put(event.getEntity().getClass().hashCode(), event.getEntity().getUUID());
+		for(Class<?> clazz : event.getEntity().getClass().getDeclaredClasses())
+		{
+			ENTITY_MAP2.put(clazz.hashCode(), event.getEntity().getUUID());
+		}
 	}
 	
 	public static boolean isNotReplay()
