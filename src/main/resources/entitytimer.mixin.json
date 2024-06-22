@@ -11,7 +11,7 @@
 		"MixinLevelRenderer",
 		"MixinClientLevel",
 		"MixinMinecraft",
-		"MixinGameRenderer"
+		"MixinCamera"
 	],
 	"server": [],
 	"injectors": {
