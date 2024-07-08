@@ -15,7 +15,8 @@ import com.min01.entitytimer.config.TimerConfig;
 
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -27,9 +28,9 @@ import net.minecraft.world.level.storage.WritableLevelData;
 @Mixin(ServerLevel.class)
 public abstract class MixinServerLevel extends Level
 {
-	protected MixinServerLevel(WritableLevelData p_220352_, ResourceKey<Level> p_220353_, Holder<DimensionType> p_220354_, Supplier<ProfilerFiller> p_220355_, boolean p_220356_, boolean p_220357_, long p_220358_, int p_220359_)
+	protected MixinServerLevel(WritableLevelData p_220352_, ResourceKey<Level> p_220353_, RegistryAccess p_270200_, Holder<DimensionType> p_220354_, Supplier<ProfilerFiller> p_220355_, boolean p_220356_, boolean p_220357_, long p_220358_, int p_220359_)
 	{
-		super(p_220352_, p_220353_, p_220354_, p_220355_, p_220356_, p_220357_, p_220358_, p_220359_);
+		super(p_220352_, p_220353_, p_270200_, p_220354_, p_220355_, p_220356_, p_220357_, p_220358_, p_220359_);
 	}
 	
 	@Inject(at = @At("HEAD"), method = "addFreshEntity")
@@ -94,7 +95,7 @@ public abstract class MixinServerLevel extends Level
 		++p_8648_.tickCount;
 		this.getProfiler().push(() -> 
 		{
-			return Registry.ENTITY_TYPE.getKey(p_8648_.getType()).toString();
+			return BuiltInRegistries.ENTITY_TYPE.getKey(p_8648_.getType()).toString();
 		});
 		profilerfiller.incrementCounter("tickNonPassenger");
 		p_8648_.tick();

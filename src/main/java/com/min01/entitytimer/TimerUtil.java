@@ -7,15 +7,14 @@ import java.util.UUID;
 import com.min01.entitytimer.command.SetTickrateCommand;
 import com.min01.entitytimer.network.EntityTimerSyncPacket;
 import com.min01.entitytimer.network.TickrateNetwork;
-import com.replaymod.replay.ReplayModReplay;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.network.NetworkDirection;
@@ -28,7 +27,6 @@ public class TimerUtil
 	private static final Map<UUID, EntityTimer> CLIENT_TIMER_MAP = new HashMap<>();
 	public static final EntityTimer ENTITY_TIMER = new EntityTimer(20.0F, 0L);
 
-	public static final String REPLAYMOD = "replaymod";
 	public static final String TICKRATE = "Tickrate";
 	public static final Map<Integer, UUID> ENTITY_MAP = new HashMap<>();
 	public static final Map<Integer, UUID> ENTITY_MAP2 = new HashMap<>();
@@ -57,30 +55,17 @@ public class TimerUtil
 	
 	public static boolean isNotReplay()
 	{
-		if(isModLoaded(REPLAYMOD))
-		{
-			if(ReplayModReplay.instance.getReplayHandler() == null)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			return true;
-		}
+		return true;
 	}
 	
     public static void setTickrate(Entity entity, float tickrate)
     {
-    	if(!entity.level.isClientSide)
+    	Level level = entity.level();
+    	if(!level.isClientSide)
     	{
         	for(ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) 
         	{
-        		TickrateNetwork.CHANNEL.sendTo(new EntityTimerSyncPacket(entity.getUUID(), tickrate, false), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+        		TickrateNetwork.CHANNEL.sendTo(new EntityTimerSyncPacket(entity.getUUID(), tickrate, false), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         	}
         	
 			if(!hasTimer(entity))
@@ -100,11 +85,12 @@ public class TimerUtil
     
     public static void resetTickrate(Entity entity)
     {
-    	if(!entity.level.isClientSide)
+    	Level level = entity.level();
+    	if(!level.isClientSide)
     	{
         	for(ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) 
         	{
-        		TickrateNetwork.CHANNEL.sendTo(new EntityTimerSyncPacket(entity.getUUID(), 0, true), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+        		TickrateNetwork.CHANNEL.sendTo(new EntityTimerSyncPacket(entity.getUUID(), 0, true), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         	}
         	
     		if(hasTimer(entity))
@@ -193,9 +179,4 @@ public class TimerUtil
     {
     	return TIMER_MAP.containsKey(uuid);
     }
-	
-	public static boolean isModLoaded(String modid)
-	{
-		return ModList.get().isLoaded(modid);
-	}
 }
