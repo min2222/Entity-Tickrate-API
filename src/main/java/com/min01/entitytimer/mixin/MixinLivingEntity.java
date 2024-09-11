@@ -9,10 +9,9 @@ import com.min01.entitytimer.EntityTimer;
 import com.min01.entitytimer.TimerUtil;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
-@Mixin(Entity.class)
+@Mixin(LivingEntity.class)
 public class MixinLivingEntity
 {
 	@Inject(at = @At(value = "HEAD"), method = "addAdditionalSaveData")
