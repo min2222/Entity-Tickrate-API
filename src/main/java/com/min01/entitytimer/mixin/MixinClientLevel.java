@@ -40,7 +40,7 @@ public abstract class MixinClientLevel extends Level
 	@Inject(at = @At("HEAD"), method = "tickNonPassenger", cancellable = true)
 	private void tickNonPassenger(Entity p_104640_, CallbackInfo ci) 
 	{
-		if(TimerUtil.isNotReplay() && TimerUtil.hasClientTimer(p_104640_))
+		if(TimerUtil.hasClientTimer(p_104640_))
 		{
 			ci.cancel();
 			int j = TimerUtil.getClientTimer(p_104640_).advanceTimeEntity(Util.getMillis());

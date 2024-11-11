@@ -25,7 +25,6 @@ public class TimerUtil
 {
 	private static final Map<UUID, EntityTimer> TIMER_MAP = new HashMap<>();
 	private static final Map<UUID, EntityTimer> CLIENT_TIMER_MAP = new HashMap<>();
-	public static final EntityTimer ENTITY_TIMER = new EntityTimer(20.0F, 0L);
 
 	public static final String TICKRATE = "Tickrate";
 	public static final Map<Integer, UUID> ENTITY_MAP = new HashMap<>();
@@ -51,11 +50,6 @@ public class TimerUtil
 		{
 			ENTITY_MAP2.put(clazz.hashCode(), event.getEntity().getUUID());
 		}
-	}
-	
-	public static boolean isNotReplay()
-	{
-		return true;
 	}
 	
     public static void setTickrate(Entity entity, float tickrate)

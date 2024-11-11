@@ -34,7 +34,7 @@ public class MixinLevelRenderer
     @Inject(at = @At("HEAD"), method = "renderEntity", cancellable = true)
     private void renderEntity(Entity p_109518_, double p_109519_, double p_109520_, double p_109521_, float p_109522_, PoseStack p_109523_, MultiBufferSource p_109524_, CallbackInfo ci)
     {
-		if(TimerUtil.isNotReplay() && TimerUtil.hasClientTimer(p_109518_))
+		if(TimerUtil.hasClientTimer(p_109518_))
 		{
 	    	ci.cancel();
 			EntityTimer timer = TimerUtil.getClientTimer(p_109518_);
