@@ -49,11 +49,6 @@ public class TimerUtil
 		}
 	}
 	
-	public static boolean isNotReplay()
-	{
-		return true;
-	}
-	
     public static void setTickrate(Entity entity, float tickrate)
     {
     	Level level = entity.level();
