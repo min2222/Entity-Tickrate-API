@@ -33,7 +33,7 @@ public class SetTickrateCommand
 		for(Entity entity : p_137815_) 
 		{
 			TimerUtil.resetTickrate(entity);
-			p_137814_.sendSuccess(Component.literal("Reseted Tickrate of " + entity.getDisplayName().getString()), true);
+			p_137814_.sendSuccess(() -> Component.literal("Reseted Tickrate of " + entity.getDisplayName().getString()), true);
 		}
 		return p_137815_.size();
 	}
@@ -45,12 +45,12 @@ public class SetTickrateCommand
 			if(tickRate == 20)
 			{
 				TimerUtil.resetTickrate(entity);
-				p_137814_.sendSuccess(Component.literal("Reseted Tickrate of " + entity.getDisplayName().getString()), true);
+				p_137814_.sendSuccess(() -> Component.literal("Reseted Tickrate of " + entity.getDisplayName().getString()), true);
 			}
 			else
 			{
 				TimerUtil.setTickrate(entity, tickRate);
-				p_137814_.sendSuccess(Component.literal("Changed Tickrate of " + entity.getDisplayName().getString() + " to " + tickRate), true);
+				p_137814_.sendSuccess(() -> Component.literal("Changed Tickrate of " + entity.getDisplayName().getString() + " to " + tickRate), true);
 			}
 		}
 		return p_137815_.size();

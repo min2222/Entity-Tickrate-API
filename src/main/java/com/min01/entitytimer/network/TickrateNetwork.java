@@ -2,31 +2,26 @@ package com.min01.entitytimer.network;
 
 import com.min01.entitytimer.EntityTickrateAPI;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+@EventBusSubscriber(modid = EntityTickrateAPI.MODID, bus = Bus.MOD)
 public class TickrateNetwork
 {
-	public static int ID;
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel CHANNEL = 
-    		NetworkRegistry.newSimpleChannel(new ResourceLocation(EntityTickrateAPI.MODID, "tickrate_channel"), 
-    				() -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
-	
-	public static void registerMessages()
+	@SubscribeEvent
+	public static void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) 
 	{
-		CHANNEL.registerMessage(ID++, EntityTimerSyncPacket.class, EntityTimerSyncPacket::encode, EntityTimerSyncPacket::new, EntityTimerSyncPacket.Handler::onMessage);
+	    PayloadRegistrar registrar = event.registrar("1");
+	    registrar.playToClient(EntityTimerSyncPacket.TYPE, EntityTimerSyncPacket.STREAM_CODEC, EntityTimerSyncPacket::handle);
 	}
 	
-    public static <MSG> void sendToAll(MSG message) 
+    public static void sendToAll(CustomPacketPayload message) 
     {
-    	for (ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) 
-    	{
-    		CHANNEL.sendTo(message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
-    	}
+    	PacketDistributor.sendToAllPlayers(message);
     }
 }

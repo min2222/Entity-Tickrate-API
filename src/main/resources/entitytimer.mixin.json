@@ -10,7 +10,7 @@
 	"client": [
 		"MixinLevelRenderer",
 		"MixinClientLevel",
-		"MixinMinecraft",
+		"MixinDeltaTrackerTimer",
 		"MixinCamera"
 	],
 	"server": [],

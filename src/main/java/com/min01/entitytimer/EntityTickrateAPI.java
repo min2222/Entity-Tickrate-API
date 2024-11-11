@@ -1,19 +1,19 @@
 package com.min01.entitytimer;
 
 import com.min01.entitytimer.config.TimerConfig;
-import com.min01.entitytimer.network.TickrateNetwork;
 
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig.Type;
 
 @Mod(EntityTickrateAPI.MODID)
 public class EntityTickrateAPI 
 {
 	public static final String MODID = "entitytickrateapi";
 	
-	public EntityTickrateAPI() 
+	public EntityTickrateAPI(IEventBus bus, ModContainer container) 
 	{
-		TickrateNetwork.registerMessages();
-		TimerConfig.loadConfig(TimerConfig.CONFIG, FMLPaths.CONFIGDIR.get().resolve("entity-tickrate-api.toml").toString());
+		container.registerConfig(Type.COMMON, TimerConfig.CONFIG_SPEC, "entity-tickrate-api.toml");
 	}
 }
