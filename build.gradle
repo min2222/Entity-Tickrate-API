@@ -145,13 +145,6 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
-	
-	    maven {
-		url "https://cursemaven.com"
-    	content {
-        	includeGroup "curse.maven"
-        }
-    }
 }
 
 dependencies {
@@ -160,7 +153,6 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.19.2-43.3.0'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	implementation fg.deobf("curse.maven:replaymod-for-forge-reborn-948573:4945268")
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency

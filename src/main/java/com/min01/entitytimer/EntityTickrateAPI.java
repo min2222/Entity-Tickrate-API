@@ -3,8 +3,9 @@ package com.min01.entitytimer;
 import com.min01.entitytimer.config.TimerConfig;
 import com.min01.entitytimer.network.TickrateNetwork;
 
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.config.ModConfig.Type;
 
 @Mod(EntityTickrateAPI.MODID)
 public class EntityTickrateAPI 
@@ -13,7 +14,8 @@ public class EntityTickrateAPI
 	
 	public EntityTickrateAPI() 
 	{
+		ModLoadingContext ctx = ModLoadingContext.get();
 		TickrateNetwork.registerMessages();
-		TimerConfig.loadConfig(TimerConfig.CONFIG, FMLPaths.CONFIGDIR.get().resolve("entity-tickrate-api.toml").toString());
+		ctx.registerConfig(Type.COMMON, TimerConfig.CONFIG_SPEC, "entity-tickrate-api.toml");
 	}
 }

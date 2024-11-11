@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.min01.entitytimer.command.SetTickrateCommand;
 import com.min01.entitytimer.network.EntityTimerSyncPacket;
 import com.min01.entitytimer.network.TickrateNetwork;
-import com.replaymod.replay.ReplayModReplay;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -26,9 +25,7 @@ public class TimerUtil
 {
 	private static final Map<UUID, EntityTimer> TIMER_MAP = new HashMap<>();
 	private static final Map<UUID, EntityTimer> CLIENT_TIMER_MAP = new HashMap<>();
-	public static final EntityTimer ENTITY_TIMER = new EntityTimer(20.0F, 0L);
 
-	public static final String REPLAYMOD = "replaymod";
 	public static final String TICKRATE = "Tickrate";
 	public static final Map<Integer, UUID> ENTITY_MAP = new HashMap<>();
 	public static final Map<Integer, UUID> ENTITY_MAP2 = new HashMap<>();
@@ -52,25 +49,6 @@ public class TimerUtil
 		for(Class<?> clazz : event.getEntity().getClass().getDeclaredClasses())
 		{
 			ENTITY_MAP2.put(clazz.hashCode(), event.getEntity().getUUID());
-		}
-	}
-	
-	public static boolean isNotReplay()
-	{
-		if(isModLoaded(REPLAYMOD))
-		{
-			if(ReplayModReplay.instance.getReplayHandler() == null)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			return true;
 		}
 	}
 	
