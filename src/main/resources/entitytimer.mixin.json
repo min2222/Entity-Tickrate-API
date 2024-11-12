@@ -10,9 +10,10 @@
 	"client": [
 		"MixinLevelRenderer",
 		"MixinClientLevel",
-		"MixinCamera"
+		"MixinMinecraft"
 	],
-	"server": [],
+	"server": [
+	],
 	"injectors": {
 		"defaultRequire": 1
 	},
