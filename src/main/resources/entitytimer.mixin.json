@@ -10,7 +10,7 @@
 	"client": [
 		"MixinLevelRenderer",
 		"MixinClientLevel",
-		"MixinCamera"
+		"MixinDeltaTrackerTimer"
 	],
 	"server": [],
 	"injectors": {
